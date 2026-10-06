@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Tour Eiffel 10K Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: race-bib header + today card, then one 7-day row per training week (stacks to a list on phones) */
+:root{
+  --bg:#f3f4f7; --surface:#ffffff; --ink:#151a2e; --muted:#5b6176; --line:#dde0e8;
+  --accent:#ffcc00; --accent-ink:#151a2e;
+  --easy:#2f8f6a; --easy-bg:#e4f3ec;
+  --long:#2a5bd7; --long-bg:#e5ecfb;
+  --hard:#e0482a; --hard-bg:#fbe7e2;
+  --race:#151a2e; --race-bg:#ffcc00;
+  --rest:#9aa0b2;
+  --f-display:"Barlow Condensed","Arial Narrow",sans-serif;
+  --f-body:"Barlow",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1220; --surface:#181c2e; --ink:#eef0f6; --muted:#a2a8bd; --line:#2b3048;
+  --accent:#ffcc00; --accent-ink:#151a2e;
+  --easy:#5fd0a2; --easy-bg:#16302a; --long:#8fb0ff; --long-bg:#1b2648;
+  --hard:#ff8166; --hard-bg:#3a1f1c; --race:#151a2e; --race-bg:#ffcc00; --rest:#6b7189;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1220; --surface:#181c2e; --ink:#eef0f6; --muted:#a2a8bd; --line:#2b3048;
+  --accent:#ffcc00; --accent-ink:#151a2e;
+  --easy:#5fd0a2; --easy-bg:#16302a; --long:#8fb0ff; --long-bg:#1b2648;
+  --hard:#ff8166; --hard-bg:#3a1f1c; --race:#151a2e; --race-bg:#ffcc00; --rest:#6b7189;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:16px;padding-block:24px 56px;display:flex;flex-direction:column;gap:28px}
+h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;letter-spacing:.01em}
+.label{font-family:var(--f-display);font-weight:600;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+/* header */
+.top{display:flex;flex-wrap:wrap;gap:16px 32px;align-items:flex-end;justify-content:space-between}
+.top h1{font-size:clamp(40px,7vw,64px);font-weight:800;line-height:.95;text-transform:uppercase}
+.top h1 span{display:inline-block;background:var(--accent);color:var(--accent-ink);padding:0 .18em;margin-left:.08em}
+.meta{display:flex;flex-wrap:wrap;gap:24px}
+.meta div{display:flex;flex-direction:column}
+.meta b{font-family:var(--f-display);font-size:32px;font-weight:700;line-height:1}
+
+/* today */
+.today{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:0;background:var(--surface);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.today-main{padding:24px;display:flex;flex-direction:column;gap:10px;border-left:8px solid var(--c,var(--rest))}
+.today-main h2{font-size:clamp(30px,5vw,44px);font-weight:700;line-height:1}
+.today-main .detail{font-size:17px;max-width:60ch}
+.today-side{padding:24px;background:var(--bg);display:flex;flex-direction:column;gap:12px;border-left:1px solid var(--line)}
+.today-side .row{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding-bottom:8px}
+.done-btn{align-self:flex-start;font:600 15px var(--f-body);padding:10px 18px;border-radius:4px;border:2px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
+.done-btn[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.done-btn:focus-visible,.day:focus-visible{outline:3px solid var(--long);outline-offset:2px}
+
+/* legend + progress */
+.bar{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px}
+.legend span{display:inline-flex;align-items:center;gap:6px;font-size:14px}
+.legend i{width:12px;height:12px;border-radius:2px;background:var(--c)}
+.progress{display:flex;align-items:center;gap:10px;font-size:14px}
+.track{width:160px;height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.track div{height:100%;background:var(--easy);width:0}
+
+/* weeks */
+.weeks{display:flex;flex-direction:column;gap:18px}
+.week{display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;align-items:stretch}
+.week-head{display:flex;flex-direction:column;gap:2px;padding-top:6px}
+.week-head h3{font-size:26px;font-weight:700;line-height:1}
+.week-head .phase{font-weight:600}
+.week-head .km{color:var(--muted);font-size:14px}
+.days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.day{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:8px 8px 10px;display:flex;flex-direction:column;gap:4px;min-height:118px;cursor:pointer;text-align:left;font:inherit;color:inherit}
+.day.rest{background:transparent;border-style:dashed;cursor:default}
+.day .d{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--f-display);font-weight:600;font-size:14px;letter-spacing:.04em;color:var(--muted);text-transform:uppercase}
+.day .t{font-family:var(--f-display);font-weight:700;font-size:18px;line-height:1.05;color:var(--c)}
+.day .s{font-size:13px;line-height:1.35}
+.day .tag{position:absolute;inset:0 auto auto 0;width:4px;height:100%;background:var(--c);border-radius:4px 0 0 4px}
+.day.rest .tag{display:none}
+.day.done{opacity:.55}
+.day.done .t::after{content:" ✓";color:var(--easy)}
+.day.is-today{outline:3px solid var(--accent);outline-offset:1px}
+.day.race{background:var(--race-bg);border-color:var(--race-bg)}
+.day.race .t,.day.race .s,.day.race .d{color:var(--race)}
+.easy{--c:var(--easy)} .long{--c:var(--long)} .hard{--c:var(--hard)} .race{--c:var(--race)} .rest{--c:var(--rest)}
+
+/* reference */
+.ref{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.panel h2{font-size:24px;font-weight:700;text-transform:uppercase}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-display);font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-size:13px;color:var(--muted)}
+td.mono{white-space:nowrap}
+ul.rules{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.note{font-size:13px;color:var(--muted)}
+
+@media (max-width:760px){
+  .today{grid-template-columns:1fr}
+  .today-side{border-left:0;border-top:1px solid var(--line)}
+  .week{grid-template-columns:1fr}
+  .week-head{flex-direction:row;flex-wrap:wrap;gap:4px 12px;align-items:baseline}
+  .days{grid-template-columns:1fr}
+  .day{min-height:0;flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:4px 10px;padding-left:14px}
+  .day .d{width:72px}
+  .day .t{font-size:17px}
+  .day .s{flex-basis:100%;padding-left:82px}
+  .day.rest{display:none}
+}
+@media (prefers-reduced-motion:no-preference){.track div{transition:width .4s ease}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="label">Training plan · 6 Oct to 6 Dec 2026</div>
+      <h1>Tour Eiffel <span>10K</span></h1>
+    </div>
+    <div class="meta">
+      <div><span class="label">Goal</span><b class="mono">47:30</b><span class="note">4:45/km · fallback 48:00</span></div>
+      <div><span class="label">Race day</span><b>Sun 6 Dec</b><span class="note" id="countdown"></span></div>
+    </div>
+  </header>
+
+  <section class="today" id="today" aria-live="polite"></section>
+
+  <div class="bar">
+    <div class="legend">
+      <span class="easy"><i></i>Easy</span>
+      <span class="long"><i></i>Long run</span>
+      <span class="hard"><i></i>Hard session</span>
+      <span style="--c:var(--race-bg)"><i></i>Race</span>
+    </div>
+    <div class="progress"><span id="progText">0 of 0 runs done</span><div class="track"><div id="progFill"></div></div></div>
+  </div>
+  <p class="note" style="margin:-16px 0 0">Tap a session to mark it done. Ticks are saved in this browser only.</p>
+
+  <section class="weeks" id="weeks"></section>
+
+  <section class="ref">
+    <div class="panel">
+      <h2>Paces</h2>
+      <div class="tbl"><table>
+        <thead><tr><th>Effort</th><th>Pace /km</th><th>HR (bpm)</th></tr></thead>
+        <tbody>
+          <tr><td>Easy</td><td class="mono">6:30–7:10</td><td class="mono">145–150</td></tr>
+          <tr><td>Long run</td><td class="mono">6:30–6:50</td><td class="mono">145–155</td></tr>
+          <tr><td>Tempo / 1000 m (build)</td><td class="mono">4:50–4:55</td><td class="mono">172–178</td></tr>
+          <tr><td>Goal pace</td><td class="mono">4:45</td><td class="mono">176–180</td></tr>
+          <tr><td>Sharpening 1000 m</td><td class="mono">4:40</td><td class="mono">178+</td></tr>
+          <tr><td>Short reps 400 m</td><td class="mono">4:30</td><td class="mono">—</td></tr>
+        </tbody>
+      </table></div>
+      <p class="note">If easy heart rate climbs above 155, slow down or walk, whatever the pace says. WU = warm-up, CD = cool-down, both easy.</p>
+    </div>
+    <div class="panel">
+      <h2>Race splits</h2>
+      <div class="tbl"><table>
+        <thead><tr><th>Segment</th><th>Pace /km</th><th>Clock</th></tr></thead>
+        <tbody>
+          <tr><td>Km 1</td><td class="mono">4:48</td><td class="mono">4:48</td></tr>
+          <tr><td>Km 2–5</td><td class="mono">4:45</td><td class="mono">23:48</td></tr>
+          <tr><td>Km 6–9</td><td class="mono">4:45</td><td class="mono">42:48</td></tr>
+          <tr><td>Km 10</td><td class="mono">4:42</td><td class="mono">47:30</td></tr>
+        </tbody>
+      </table></div>
+      <p class="note">Fallback 48:00: km 1–2 at 4:50, then 4:48/km. Warm up 10 min easy, drills, 3 strides, done 10 min before the start. If HR passes 182 before km 7, ease 5 s/km.</p>
+    </div>
+    <div class="panel">
+      <h2>Rules</h2>
+      <ul class="rules">
+        <li><b>Week 7 decision:</b> all 3×2000 m at 4:45–4:50 with HR ≤ 178 → go for 47:30. Slower than 4:52 or HR above 180 → race for 48:00.</li>
+        <li><b>Heavy legs:</b> drop the Wednesday run first, then the Thursday reps, then make Tuesday easy.</li>
+        <li><b>Failed workout:</b> finish 5 s/km slower, don't repeat it, move on.</li>
+        <li><b>Sharp or one-sided pain:</b> stop, skip the next run, see a physio if it lasts 3 days.</li>
+        <li><b>Missed week:</b> repeat the previous week. Two missed weeks → aim for 48:00.</li>
+        <li><b>Shoes:</b> Endorphin Speed 5 for hard sessions and the race; check wear on the two ~540 km easy pairs.</li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<script>
+const PLAN=[
+ {w:1,phase:"Recovery",km:18,start:"2026-10-05",days:{
+  "2026-10-06":["easy","Easy 5 km","Heart rate under 150. First run since the marathon: keep it gentle."],
+  "2026-10-08":["easy","Easy 5 km","Relaxed, conversational."],
+  "2026-10-10":["easy","Easy 8 km","Cut short if calves or hamstrings feel tight."]}},
+ {w:2,phase:"Recovery",km:26,start:"2026-10-12",days:{
+  "2026-10-13":["easy","Easy 6 km + strides","6 km easy, then 4 × 20 s strides, walk back."],
+  "2026-10-15":["easy","Easy 6 km","Relaxed, conversational."],
+  "2026-10-17":["long","Long 10 km","6:30–6:50/km, fully conversational."],
+  "2026-10-18":["easy","Easy 4 km","Recovery jog."]}},
+ {w:3,phase:"Build",km:31,start:"2026-10-19",days:{
+  "2026-10-20":["hard","5 × 1000 m","2 km WU · 5 × 1000 m at 4:55/km, 90 s jog · 1.5 km CD."],
+  "2026-10-22":["easy","Easy 6 km","Relaxed, conversational."],
+  "2026-10-24":["long","Long 10 km","6:30–6:50/km."],
+  "2026-10-25":["easy","Easy 5 km","Recovery jog."]}},
+ {w:4,phase:"Build",km:37,start:"2026-10-26",days:{
+  "2026-10-27":["hard","Tempo 2 × 10 min","2 km WU · 2 × 10 min at 4:55/km, 2 min jog · 1.5 km CD."],
+  "2026-10-28":["easy","Easy 4 km","HR under 145. First to drop if legs are heavy."],
+  "2026-10-29":["hard","8 × 400 m","1.5 km WU · 8 × 400 m at 4:30/km, 200 m jog · 1.5 km CD. Stop if form falls apart."],
+  "2026-10-31":["long","Long 12 km","6:30–6:50/km."],
+  "2026-11-01":["easy","Easy 4 km","Recovery jog."]}},
+ {w:5,phase:"Build",km:43,start:"2026-11-02",days:{
+  "2026-11-03":["hard","6 × 1000 m","2 km WU · 6 × 1000 m at 4:50/km, 90 s jog · 1.5 km CD."],
+  "2026-11-04":["easy","Easy 5 km","HR under 145."],
+  "2026-11-05":["hard","10 × 400 m","1.5 km WU · 10 × 400 m at 4:30/km, 200 m jog · 1.5 km CD."],
+  "2026-11-07":["long","Long 14 km","6:30–6:50/km."],
+  "2026-11-08":["easy","Easy 4 km","Recovery jog."]}},
+ {w:6,phase:"Build · peak",km:45,start:"2026-11-09",days:{
+  "2026-11-10":["hard","Tempo 3 × 10 min","2 km WU · 3 × 10 min at 4:50/km, 2 min jog · 1.5 km CD."],
+  "2026-11-11":["easy","Easy 5 km","HR under 145."],
+  "2026-11-12":["hard","8 × 400 m","1.5 km WU · 8 × 400 m at 4:30/km, 200 m jog · 1.5 km CD."],
+  "2026-11-14":["long","Long 16 km","Longest run of the plan. 6:30–6:50/km."],
+  "2026-11-15":["easy","Easy 6 km","Recovery jog."]}},
+ {w:7,phase:"Race-specific",km:39,start:"2026-11-16",days:{
+  "2026-11-17":["hard","3 × 2000 m · decision","2.5 km WU · 3 × 2000 m at 4:45/km, 2.5 min jog · 1.5 km CD. Race shoes. Decides 47:30 or 48:00."],
+  "2026-11-18":["easy","Easy 4 km","HR under 145."],
+  "2026-11-19":["hard","6 × 400 m","1.5 km WU · 6 × 400 m at 4:30/km, 200 m jog · 1.5 km CD. Keep it relaxed."],
+  "2026-11-21":["long","Long 14 km","6:30–6:50/km."],
+  "2026-11-22":["easy","Easy 4 km","Recovery jog."]}},
+ {w:8,phase:"Sharpen",km:27,start:"2026-11-23",days:{
+  "2026-11-24":["hard","4 × 1000 m","2 km WU · 4 × 1000 m at 4:40/km, 2 min jog · 1.5 km CD. Stop if the last two feel heavy."],
+  "2026-11-26":["easy","Easy 5 km + strides","5 km easy, then 4 strides."],
+  "2026-11-28":["easy","Easy 10 km","Easy effort, not a long-run push."],
+  "2026-11-29":["easy","Easy 4 km","Recovery jog."]}},
+ {w:9,phase:"Taper",km:23,start:"2026-11-30",days:{
+  "2026-12-01":["hard","2 × 1000 m","2 km WU · 2 × 1000 m at 4:45/km, 2 min jog · 1.5 km CD. Controlled, not hard."],
+  "2026-12-03":["easy","Easy 4 km + strides","4 km easy, then 4 strides."],
+  "2026-12-05":["easy","Shakeout 3 km","3 km easy + 3 strides. Lay out kit, bib and breakfast."],
+  "2026-12-06":["race","RACE · 10 km","Tour Eiffel 10K. Km 1 at 4:48, then 4:45. Breakfast 2.5–3 h before."]}}
+];
+const DOW=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const KEY="te10k-done";
+let done={};
+try{done=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){done={}}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(done))}catch(e){}};
+
+function parisToday(){
+  try{return new Intl.DateTimeFormat("en-CA",{timeZone:"Europe/Paris",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date())}
+  catch(e){return new Date().toISOString().slice(0,10)}
+}
+function addDays(iso,n){const d=new Date(iso+"T12:00:00Z");d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)}
+function fmt(iso){const d=new Date(iso+"T12:00:00Z");return {dow:DOW[(d.getUTCDay()+6)%7],day:d.getUTCDate(),mon:MON[d.getUTCMonth()]}}
+const TODAY=parisToday();
+const ALL={};PLAN.forEach(w=>Object.entries(w.days).forEach(([k,v])=>ALL[k]={w:w.w,phase:w.phase,type:v[0],title:v[1],detail:v[2]}));
+const SESSIONS=Object.keys(ALL).sort();
+
+function renderWeeks(){
+  const root=document.getElementById("weeks");root.innerHTML="";
+  PLAN.forEach(w=>{
+    const end=fmt(addDays(w.start,6)),st=fmt(w.start);
+    const sec=document.createElement("article");sec.className="week";
+    sec.innerHTML=`<div class="week-head"><span class="label">Week ${w.w}</span><h3>${st.day} ${st.mon} – ${end.day} ${end.mon}</h3><span class="phase">${w.phase}</span><span class="km mono">~${w.km} km</span></div><div class="days"></div>`;
+    const grid=sec.querySelector(".days");
+    for(let i=0;i<7;i++){
+      const iso=addDays(w.start,i),f=fmt(iso),s=ALL[iso];
+      const el=document.createElement(s?"button":"div");
+      el.className="day "+(s?s.type:"rest")+(iso===TODAY?" is-today":"")+(s&&done[iso]?" done":"");
+      el.innerHTML=`<span class="tag"></span><span class="d"><span>${f.dow}</span><span class="mono">${f.day}</span></span>`+
+        (s?`<span class="t">${s.title}</span><span class="s">${s.detail}</span>`:`<span class="s" style="color:var(--rest)">Rest</span>`);
+      if(s){el.type="button";el.setAttribute("aria-pressed",done[iso]?"true":"false");el.onclick=()=>toggle(iso)}
+      grid.appendChild(el);
+    }
+    root.appendChild(sec);
+  });
+}
+function renderToday(){
+  const box=document.getElementById("today");
+  const s=ALL[TODAY];
+  const next=SESSIONS.find(d=>d>TODAY);
+  const f=fmt(TODAY);
+  let main;
+  if(TODAY>"2026-12-06"){main=`<div class="today-main" style="--c:var(--race-bg)"><span class="label">Plan complete</span><h2>Race done</h2><p class="detail">The Tour Eiffel 10K was on Sunday 6 December.</p></div>`}
+  else if(TODAY<"2026-10-05"){main=`<div class="today-main"><span class="label">Plan starts Monday 5 Oct</span><h2>Not started yet</h2></div>`}
+  else if(s){main=`<div class="today-main ${s.type}"><span class="label">Today · ${f.dow} ${f.day} ${f.mon} · Week ${s.w}</span><h2>${s.title}</h2><p class="detail">${s.detail}</p><button class="done-btn" type="button" aria-pressed="${done[TODAY]?"true":"false"}" id="todayBtn">${done[TODAY]?"Done ✓":"Mark as done"}</button></div>`}
+  else{main=`<div class="today-main rest"><span class="label">Today · ${f.dow} ${f.day} ${f.mon}</span><h2>Rest day</h2><p class="detail">No run today. Sleep, eat well, and keep the legs fresh for the next session.</p></div>`}
+  let side="";
+  if(next){const n=ALL[next],nf=fmt(next);side=`<div class="today-side"><span class="label">Next session</span><div class="row"><span>${nf.dow} ${nf.day} ${nf.mon}</span><b>${n.title}</b></div><span class="note">${n.detail}</span></div>`}
+  else side=`<div class="today-side"><span class="label">Next</span><span>Recover and enjoy it.</span></div>`;
+  box.innerHTML=main+side;
+  const b=document.getElementById("todayBtn");if(b)b.onclick=()=>toggle(TODAY);
+}
+function renderProgress(){
+  const n=SESSIONS.filter(d=>done[d]).length;
+  document.getElementById("progText").textContent=`${n} of ${SESSIONS.length} runs done`;
+  document.getElementById("progFill").style.width=(n/SESSIONS.length*100)+"%";
+  const days=Math.round((new Date("2026-12-06T12:00:00Z")-new Date(TODAY+"T12:00:00Z"))/864e5);
+  document.getElementById("countdown").textContent=days>0?`${days} days to go`:days===0?"Today!":"Done";
+}
+function toggle(iso){if(done[iso])delete done[iso];else done[iso]=1;save();renderAll()}
+function renderAll(){renderToday();renderWeeks();renderProgress()}
+renderAll();
+</script>
+
+</body>
+</html>
