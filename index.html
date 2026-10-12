@@ -89,7 +89,7 @@ h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;letter-spacing:
 .day.is-today{outline:3px solid var(--accent);outline-offset:1px}
 .day.race{background:var(--race-bg);border-color:var(--race-bg)}
 .day.race .t,.day.race .s,.day.race .d{color:var(--race)}
-.easy{--c:var(--easy)} .long{--c:var(--long)} .hard{--c:var(--hard)} .race{--c:var(--race)} .rest{--c:var(--rest)}
+.half{--c:var(--long)} .day.half{background:var(--long-bg);border-color:var(--long)} .easy{--c:var(--easy)} .long{--c:var(--long)} .hard{--c:var(--hard)} .race{--c:var(--race)} .rest{--c:var(--rest)}
 
 /* reference */
 .ref{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
@@ -139,6 +139,7 @@ ul.rules{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;f
       <span class="easy"><i></i>Easy</span>
       <span class="long"><i></i>Long run</span>
       <span class="hard"><i></i>Hard session</span>
+      <span class="half"><i></i>Half marathon</span>
       <span style="--c:var(--race-bg)"><i></i>Race</span>
     </div>
     <div class="progress"><span id="progText">0 of 0 runs done</span><div class="track"><div id="progFill"></div></div></div>
@@ -155,6 +156,7 @@ ul.rules{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;f
         <tbody>
           <tr><td>Easy</td><td class="mono">6:30–7:10</td><td class="mono">145–150</td></tr>
           <tr><td>Long run</td><td class="mono">6:30–6:50</td><td class="mono">145–155</td></tr>
+          <tr><td>Half marathon (1 Nov)</td><td class="mono">5:30</td><td class="mono">~165 (cap 168)</td></tr>
           <tr><td>Tempo / 1000 m (build)</td><td class="mono">4:50–4:55</td><td class="mono">172–178</td></tr>
           <tr><td>Goal pace</td><td class="mono">4:45</td><td class="mono">176–180</td></tr>
           <tr><td>Sharpening 1000 m</td><td class="mono">4:40</td><td class="mono">178+</td></tr>
@@ -184,7 +186,8 @@ ul.rules{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;f
         <li><b>Failed workout:</b> finish 5 s/km slower, don't repeat it, move on.</li>
         <li><b>Sharp or one-sided pain:</b> stop, skip the next run, see a physio if it lasts 3 days.</li>
         <li><b>Missed week:</b> repeat the previous week. Two missed weeks → aim for 48:00.</li>
-        <li><b>Shoes:</b> Endorphin Speed 5 for hard sessions and the race; check wear on the two ~540 km easy pairs.</li>
+        <li><b>Half marathon (1 Nov):</b> 5:30/km, HR around 165, slow down above 168. With pain or heavy legs that week, skip it or stop at 15 km.</li>
+        <li><b>Shoes:</b> Endorphin Speed 5 for the week 7 session and the 10K; run the half in your usual long-run shoes. Check wear on the two ~540 km easy pairs.</li>
       </ul>
     </div>
   </section>
@@ -201,29 +204,27 @@ const PLAN=[
   "2026-10-15":["easy","Easy 6 km","Relaxed, conversational."],
   "2026-10-17":["long","Long 10 km","6:30–6:50/km, fully conversational."],
   "2026-10-18":["easy","Easy 4 km","Recovery jog."]}},
- {w:3,phase:"Build",km:31,start:"2026-10-19",days:{
+ {w:3,phase:"Build",km:33,start:"2026-10-19",days:{
   "2026-10-20":["hard","5 × 1000 m","2 km WU · 5 × 1000 m at 4:55/km, 90 s jog · 1.5 km CD."],
   "2026-10-22":["easy","Easy 6 km","Relaxed, conversational."],
-  "2026-10-24":["long","Long 10 km","6:30–6:50/km."],
+  "2026-10-24":["long","Long 12 km","6:30–6:50/km. Last long run before the half marathon."],
   "2026-10-25":["easy","Easy 5 km","Recovery jog."]}},
- {w:4,phase:"Build",km:37,start:"2026-10-26",days:{
-  "2026-10-27":["hard","Tempo 2 × 10 min","2 km WU · 2 × 10 min at 4:55/km, 2 min jog · 1.5 km CD."],
-  "2026-10-28":["easy","Easy 4 km","HR under 145. First to drop if legs are heavy."],
-  "2026-10-29":["hard","8 × 400 m","1.5 km WU · 8 × 400 m at 4:30/km, 200 m jog · 1.5 km CD. Stop if form falls apart."],
-  "2026-10-31":["long","Long 12 km","6:30–6:50/km."],
-  "2026-11-01":["easy","Easy 4 km","Recovery jog."]}},
- {w:5,phase:"Build",km:43,start:"2026-11-02",days:{
-  "2026-11-03":["hard","6 × 1000 m","2 km WU · 6 × 1000 m at 4:50/km, 90 s jog · 1.5 km CD."],
-  "2026-11-04":["easy","Easy 5 km","HR under 145."],
-  "2026-11-05":["hard","10 × 400 m","1.5 km WU · 10 × 400 m at 4:30/km, 200 m jog · 1.5 km CD."],
-  "2026-11-07":["long","Long 14 km","6:30–6:50/km."],
+ {w:4,phase:"Half marathon week",km:36,start:"2026-10-26",days:{
+  "2026-10-27":["hard","Tempo 2 × 8 min","2 km WU · 2 × 8 min at 4:55/km, 2 min jog · 1.5 km CD. Last quality session before the half marathon."],
+  "2026-10-29":["easy","Easy 5 km + strides","5 km easy, then 4 strides."],
+  "2026-10-31":["easy","Shakeout 3 km","3 km easy + 3 strides. Lay out kit, bib and breakfast."],
+  "2026-11-01":["half","HALF MARATHON · 21.1 km","5:30/km, about 1:56. Km 1–3 at 5:40, then settle at 5:30 (HR around 165, slow down above 168). Gel around km 10. A steady effort, not a race: with pain or heavy legs, skip it or stop at 15 km."]}},
+ {w:5,phase:"Recovery",km:27,start:"2026-11-02",days:{
+  "2026-11-03":["easy","Easy 5 km","HR under 150. Skip it if your legs are sore after the half."],
+  "2026-11-05":["easy","Easy 6 km + strides","6 km easy, then 4 strides."],
+  "2026-11-07":["long","Long 12 km","6:30–6:50/km."],
   "2026-11-08":["easy","Easy 4 km","Recovery jog."]}},
- {w:6,phase:"Build · peak",km:45,start:"2026-11-09",days:{
+ {w:6,phase:"Build · peak",km:42,start:"2026-11-09",days:{
   "2026-11-10":["hard","Tempo 3 × 10 min","2 km WU · 3 × 10 min at 4:50/km, 2 min jog · 1.5 km CD."],
   "2026-11-11":["easy","Easy 5 km","HR under 145."],
   "2026-11-12":["hard","8 × 400 m","1.5 km WU · 8 × 400 m at 4:30/km, 200 m jog · 1.5 km CD."],
-  "2026-11-14":["long","Long 16 km","Longest run of the plan. 6:30–6:50/km."],
-  "2026-11-15":["easy","Easy 6 km","Recovery jog."]}},
+  "2026-11-14":["long","Long 14 km","6:30–6:50/km."],
+  "2026-11-15":["easy","Easy 5 km","Recovery jog."]}},
  {w:7,phase:"Race-specific",km:39,start:"2026-11-16",days:{
   "2026-11-17":["hard","3 × 2000 m · decision","2.5 km WU · 3 × 2000 m at 4:45/km, 2.5 min jog · 1.5 km CD. Race shoes. Decides 47:30 or 48:00."],
   "2026-11-18":["easy","Easy 4 km","HR under 145."],
